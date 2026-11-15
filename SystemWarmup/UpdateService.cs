@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace SystemWarmup;
 
 public sealed record AvailableUpdate(string Tag, string Description, string ReleaseUrl,
-    string DownloadUrl, string Sha256, string Repository, string Channel, long RunId = 0, string Commit = "");
+    string DownloadUrl, string Sha256, string Repository, string Channel, long RunId = 0, string Commit = "", int Attempt = 1);
 
 public sealed record PreparedUpdate(AvailableUpdate Release, string Directory, string ApplicationRoot, string Script);
 
@@ -122,7 +122,8 @@ public sealed class UpdateService : IDisposable
             throw new InvalidOperationException($"{identity} no está disponible: CI {status}/{conclusion}. No se instalará un build anterior.");
         if (installed is { } local && local.Channel == "Build" &&
             local.Repository.Equals(repo, StringComparison.OrdinalIgnoreCase) &&
-            local.Identity == identity && local.Commit == head) return null;
+            local.Identity == identity && local.Commit == head &&
+            local.Attempt == run.GetProperty("run_attempt").GetInt32()) return null;
 
         using var artsDoc = await GetJsonAsync($"https://api.github.com/repos/{repo}/actions/runs/{runId}/artifacts?per_page=100", ct);
         var arts = artsDoc.RootElement.GetProperty("artifacts").EnumerateArray().ToList();
@@ -142,7 +143,8 @@ public sealed class UpdateService : IDisposable
             throw new InvalidDataException("URL del artefacto de Actions inválida.");
         return new AvailableUpdate(identity, $"PR #{pr} · {headBranch} · {head[..12]} · run #{runNumber}",
             run.GetProperty("html_url").GetString() ?? "",
-            download, digest[7..].ToUpperInvariant(), repo, "Build", runId, head);
+            download, digest[7..].ToUpperInvariant(), repo, "Build", runId, head,
+            run.GetProperty("run_attempt").GetInt32());
     }
 
     private async Task SetBuildAuthenticationAsync(CancellationToken ct)
@@ -266,7 +268,7 @@ public sealed class UpdateService : IDisposable
     {
         string path = Path.Combine(folder, "installed-update.json");
         File.WriteAllText(path, JsonSerializer.Serialize(
-            new InstalledUpdate(update.Channel, update.Repository, update.Tag, update.RunId, update.Commit)));
+            new InstalledUpdate(update.Channel, update.Repository, update.Tag, update.RunId, update.Commit, update.Attempt)));
         return path;
     }
 
