@@ -244,9 +244,8 @@ public sealed class UpdateService : IDisposable
             archive.ExtractToDirectory(extracted, overwriteFiles: false);
         }
         string exe = Path.Combine(extracted, "SystemWarmup.exe");
-        if (!File.Exists(exe) || !File.Exists(Path.Combine(extracted, "SystemWarmup.dll")) ||
-            !File.Exists(Path.Combine(extracted, "SystemWarmup.runtimeconfig.json")))
-            throw new InvalidDataException("El paquete no contiene una aplicación System Warmup válida en su raíz.");
+        if (!File.Exists(exe) || new FileInfo(exe).Length < 100_000)
+            throw new InvalidDataException("El paquete no contiene un ejecutable System Warmup válido en su raíz.");
         string script = Path.Combine(folder, "apply-update.ps1");
         await File.WriteAllTextAsync(script, UpdateScript.Content, ct);
         return new PreparedUpdate(release, folder, extracted, script);
