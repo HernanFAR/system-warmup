@@ -199,3 +199,11 @@ Estos puntos **no deben considerarse funcionalidades entregadas**.
 La especificación **reconstruye** las decisiones tomadas en el desarrollo inicial asistido por IA. No debe editarse para que parezca que esos conceptos fueron identificados de antemano o que la implementación es correcta por definición.
 
 En una futura ejecución basada en VSlices será posible observar qué conceptos emergen, qué invariantes se formalizan, qué decisiones se preservan o se revisan y qué pruebas se vuelven reproducibles. Las diferencias deben juzgarse por evidencia, no por preferencia retrospectiva por una metodología.
+
+## 13. Condición experimental: influencia previa de VSlices
+
+**Aclaración de Hernán posterior a la reconstrucción:** System Warmup se desarrolló mediante *vibe coding*, pero el asistente tenía contexto histórico y conceptual de VSlices Framework y su ecosistema. La ausencia de un protocolo VSlices formal en este desarrollo **no implica ausencia de influencia de VSlices**.
+
+Esta especificación refleja las decisiones efectivamente materializadas por el asistente, y algunas pueden compartir vocabulario o criterios con VSlices. Esa afinidad no demuestra por sí sola qué decisión fue causada por ese contexto. No se debe presentar esta realización como una línea base independiente, «sin VSlices», ni atribuirle una aplicación formal de VSlices que no está documentada.
+
+Para futuros experimentos, distinguir al menos: **(a)** contexto previo disponible al agente, **(b)** instrucción o procedimiento explícito, **(c)** herramientas/contratos VSlices utilizados realmente, **(d)** decisiones e implementación observables, **(e)** evidencia y resultados. Esta reconstrucción conserva una **línea base contextualizada**, no un grupo de control aislado.
