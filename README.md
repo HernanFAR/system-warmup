@@ -92,8 +92,15 @@ Para autenticación de Build, reutiliza `GH_TOKEN`, `GITHUB_TOKEN` o `gh auth to
 
 ## .NET 11 and Native AOT status (2026-11-15)
 
-The WPF application targets **`net11.0-windows`** and CI publishes the Windows x64 application as **self-contained** (`--self-contained true`), so the end-user machine does not need to preinstall .NET 11 Desktop Runtime. The published output remains a directory containing multiple application/runtime files; keep that directory intact.
+The WPF application targets **`net11.0-windows`** and CI publishes the Windows x64 application as **self-contained** (`--self-contained true`), so the end-user machine does not need to preinstall .NET 11 Desktop Runtime. CI now publishes a **single Windows x64 executable** (`SystemWarmup.exe`) with a bundled .NET runtime. WPF's bundled assets/native dependencies may be extracted to the .NET bundle cache when launched; this is not Native AOT.
 
 **This is not Native AOT.** WPF does not currently support Native AOT compilation; `PublishAot` is explicitly false in the project and no claim of native-AOT publication is made. Migrating the entire application to Native AOT would require a different UI stack; a future small native-AOT helper is a separate potential experiment. The actual RAM/startup differences should be measured rather than assumed.
 
 The `tests/ThemeSmoke` regression also targets .NET 11 and runs on Windows CI. This migration preserves updater archive names so existing Release/Preview/Build discovery does not need to change.
+
+
+### Single-file packaging
+
+Both the PR-build artifact (`SystemWarmup-win-x64`) and release ZIP (`SystemWarmup-win-x64.zip`) now contain exactly `SystemWarmup.exe`. GitHub Actions fails the job if unexpected loose runtime files appear in the publish directory. The updater now accepts a single-file staged package and can update an older multi-file installation by replacing its **dedicated** `SystemWarmup` installation directory.
+
+Single-file bundles are not the same as native machine code; they can take longer to start on a cold cache. As before, save `settings.json` outside the installation directory. Installer replacement/rollback needs validation on a real Windows system.
