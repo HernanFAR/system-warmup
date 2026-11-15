@@ -11,12 +11,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '11.0.x'
       - name: Publish Windows application
         shell: pwsh
         run: |
           $version = '${{ github.ref_name }}'.TrimStart('v')
-          dotnet publish SystemWarmup/SystemWarmup.csproj -c Release -r win-x64 --self-contained false -p:Version=$version -o dist
+          dotnet publish SystemWarmup/SystemWarmup.csproj -c Release -r win-x64 --self-contained true -p:Version=$version -o dist
       - name: Pack release asset
         shell: pwsh
         run: |
