@@ -113,3 +113,11 @@ Este documento registra la intención humana **antes de imponerle una estructura
 La reconstrucción es posterior a la implementación inicial; por ello no debe presentarse como un documento de requisitos que haya guiado efectivamente aquel primer desarrollo.
 
 **Fuentes de continuidad:** esta conversación de desarrollo (solicitudes y observaciones de Hernán, 15-11-2026) y el repositorio [system-warmup](https://github.com/HernanFAR/system-warmup). No se incorporan requisitos supuestos a partir de proyectos externos.
+
+## 11. Contexto compartido y contaminación de la línea base (aclaración posterior)
+
+Hernán precisó después de la reconstrucción documental que esta experiencia fue *vibe-codeada*, **pero el asistente ya disponía de contexto, historia de colaboración y criterios asociados a VSlices Framework y su ecosistema**. Por tanto, no es correcto describir esta realización como un desarrollo sin influencia de VSlices.
+
+Esta precisión es **una observación explícita posterior de Hernán**, no una medición del grado de influencia. Es posible que términos, preferencias de diseño, separación de responsabilidades, criterios de invariantes o hábitos de trazabilidad hayan influido en las respuestas del asistente incluso sin una ejecución formal de las herramientas o los protocolos VSlices. No debemos atribuir un mecanismo ni un efecto causal concreto sin evidencia adicional.
+
+La condición del caso puede describirse como **desarrollo conversacional asistido por IA con contexto previo de VSlices, sin un proceso VSlices formalmente instrumentado para esta realización**. Una comparación futura debe conservar esta exposición y evitar llamarlo «control libre de VSlices». Para contrastar el aporte de VSlices sería necesario distinguir contexto disponible, instrucciones, herramientas efectivamente invocadas, protocolo aplicado y artefactos de validación.
