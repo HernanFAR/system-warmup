@@ -82,3 +82,9 @@ Desde **Actualizaciones** se puede elegir origen GitHub y canal. `Release` consu
 La descarga del artefacto `SystemWarmup-win-x64` de GitHub Actions requiere una credencial de lectura; se resuelve en el orden `GH_TOKEN`, `GITHUB_TOKEN`, `gh auth token`. No se guarda ningún token en JSON. Para builds, si el PR está cerrado, no hay ejecución exitosa para el HEAD, falta el artefacto, expiró o falta el digest SHA-256, se indica explícitamente el motivo. **Nunca se instala un build anterior como sustituto silencioso.** Un build debe terminar exitosamente y exponer el ZIP descargable.
 
 En `Build`, el archivo proviene de `archive_download_url` de Actions y se comprueba con el `digest` del artefacto antes de su extracción. El reemplazo conserva el mecanismo de backup/rollback externo. La identidad instalada se registra en `%LOCALAPPDATA%\\SystemWarmup\\installed-update.json` solamente al terminar el reemplazo, separadamente de la configuración `settings.json`. **Pendiente:** prueba de extremo a extremo en Windows con credenciales reales, cierre/reinicio y recuperación.
+
+### Instalación segura para el actualizador
+
+El instalador externo reemplaza **la carpeta completa** de la aplicación. Por protección, solo se admite ejecutar una instalación publicada desde una carpeta dedicada cuyo nombre sea `SystemWarmup` o `SystemWarmup-win-x64`. No lo ejecutes para actualizar desde el Escritorio compartido, una raíz de proyectos o una carpeta con archivos ajenos. La aplicación rechaza esa operación antes de descargarla si detecta un directorio diferente. Ejemplo seguro: `%LOCALAPPDATA%\\Programs\\SystemWarmup`.
+
+Para autenticación de Build, reutiliza `GH_TOKEN`, `GITHUB_TOKEN` o `gh auth token`. La preferencia `CheckOnLaunch` viene activada para instalaciones nuevas, pero **solo consulta metadatos** y no descarga software sin confirmación. Si ya tienes `settings.json`, conserva el valor anterior hasta cambiarlo desde la ventana Actualizaciones.
