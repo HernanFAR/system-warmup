@@ -1,0 +1,146 @@
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+
+namespace SystemWarmup;
+
+public partial class UpdateWindow : Window
+{
+    private readonly Settings _settings;
+    private readonly Version _current;
+    private AvailableUpdate? _available;
+    private bool _busy;
+
+    public UpdateWindow(Settings settings)
+    {
+        InitializeComponent();
+        _settings = settings;
+        _current = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 1, 0);
+        CurrentVersion.Text = "Actual: v" + _current.ToString(3);
+        RepositoryBox.Text = settings.Updates.Repository;
+        ChannelBox.SelectedIndex = settings.Updates.Channel == "Prerelease" ? 1 : 0;
+        CheckOnLaunchBox.IsChecked = settings.Updates.CheckOnLaunch;
+    }
+
+    private UpdateOptions FormOptions() => new()
+    {
+        Repository = RepositoryBox.Text.Trim(),
+        Channel = (ChannelBox.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Stable",
+        CheckOnLaunch = CheckOnLaunchBox.IsChecked == true
+    };
+
+    private void SaveSettings()
+    {
+        _settings.Updates = FormOptions();
+        _settings.Save();
+    }
+
+    private void SetBusy(bool busy)
+    {
+        _busy = busy;
+        SaveButton.IsEnabled = !busy;
+        CheckButton.IsEnabled = !busy;
+        RepositoryBox.IsEnabled = !busy;
+        ChannelBox.IsEnabled = !busy;
+        CheckOnLaunchBox.IsEnabled = !busy;
+        InstallButton.IsEnabled = !busy && _available is not null;
+    }
+
+    private void Save_Click(object sender, RoutedEventArgs e)
+    {
+        SaveSettings();
+        _available = null;
+        InstallButton.IsEnabled = false;
+        StatusText.Text = "Configuración guardada. Comprueba nuevamente para utilizar el origen seleccionado.";
+    }
+
+    private async void Check_Click(object sender, RoutedEventArgs e)
+    {
+        if (_busy) return;
+        SetBusy(true);
+        try
+        {
+            SaveSettings();
+            _available = null;
+            ReleaseTitle.Text = "";
+            ReleaseNotes.Visibility = Visibility.Collapsed;
+            StatusText.Text = "Consultando releases de GitHub...";
+            using var service = new UpdateService();
+            _available = await service.CheckAsync(_settings.Updates, _current);
+            if (_available is null)
+            {
+                StatusText.Text = "No hay versiones más recientes disponibles en el canal seleccionado.";
+            }
+            else
+            {
+                ReleaseTitle.Text = _available.Tag;
+                ReleaseNotes.Text = _available.Description;
+                ReleaseNotes.Visibility = Visibility.Visible;
+                StatusText.Text = "Versión nueva encontrada. El paquete se verificará con SHA-256 antes de reemplazar archivos.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _available = null;
+            StatusText.Text = "No se pudo completar la consulta: " + ex.Message;
+        }
+        finally { SetBusy(false); }
+    }
+
+    private async void Install_Click(object sender, RoutedEventArgs e)
+    {
+        if (_busy || _available is not { } release) return;
+        string source = $"{release.Repository} · {release.Tag}";
+        if (MessageBox.Show(
+            $"Se descargará e instalará una versión publicada por {source}.\n\n" +
+            "La aplicación se cerrará, conservará una copia de la instalación anterior y " +
+            "volverá a abrirse. La configuración JSON local no se modificará.\n\n" +
+            "Instala solo versiones de repositorios que conozcas y en los que confíes. ¿Continuar?",
+            "Confirmar actualización", MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+
+        SetBusy(true);
+        try
+        {
+            string executable = Environment.ProcessPath ?? "";
+            string appDirectory = Path.GetDirectoryName(executable) ?? "";
+            if (!Path.GetFileName(executable).Equals("SystemWarmup.exe", StringComparison.OrdinalIgnoreCase) ||
+                !File.Exists(Path.Combine(appDirectory, "SystemWarmup.dll")) ||
+                appDirectory.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("La actualización requiere una instalación publicada, no dotnet run ni una carpeta de build.");
+
+            using var service = new UpdateService();
+            var progress = new Progress<string>(text => StatusText.Text = text);
+            PreparedUpdate staged = await service.PrepareAsync(release, progress);
+            StatusText.Text = "Paquete validado. Iniciando actualizador externo...";
+
+            string log = Path.Combine(staged.Directory, "apply.log");
+            var psi = new ProcessStartInfo("powershell.exe")
+            {
+                UseShellExecute = true,
+                Verb = "runas",
+                WorkingDirectory = staged.Directory
+            };
+            foreach (string argument in new[]
+            {
+                "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                "-File", staged.Script, "-ApplicationDirectory", appDirectory,
+                "-StagedDirectory", staged.ApplicationRoot, "-OldPid", Environment.ProcessId.ToString(),
+                "-LogFile", log
+            }) psi.ArgumentList.Add(argument);
+
+            var process = Process.Start(psi);
+            if (process is null) throw new InvalidOperationException("Windows no pudo iniciar el actualizador.");
+            Application.Current.Shutdown();
+        }
+        catch (Exception ex)
+        {
+            StatusText.Text = "Instalación cancelada o fallida: " + ex.Message;
+            SetBusy(false);
+        }
+    }
+}
