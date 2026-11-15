@@ -10,13 +10,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '11.0.x'
       - name: Build
         run: dotnet build SystemWarmup/SystemWarmup.csproj -c Release
       - name: Test frozen WPF brushes and theme switching
         run: dotnet run --project tests/ThemeSmoke/ThemeSmoke.csproj -c Release
       - name: Publish portable app
-        run: dotnet publish SystemWarmup/SystemWarmup.csproj -c Release -r win-x64 --self-contained false -o dist
+        run: dotnet publish SystemWarmup/SystemWarmup.csproj -c Release -r win-x64 --self-contained true -o dist
       - uses: actions/upload-artifact@v4
         with:
           name: SystemWarmup-win-x64
