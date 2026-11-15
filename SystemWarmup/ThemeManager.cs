@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace SystemWarmup;
 
-/// <summary>Updates existing WPF brush resources in place so DynamicResource bindings refresh immediately.</summary>
+/// <summary>Replaces WPF brush resources so DynamicResource bindings refresh without mutating frozen brushes.</summary>
 public sealed class ThemeManager
 {
     private static readonly IReadOnlyDictionary<string, string> Dark = new Dictionary<string, string>
@@ -53,10 +53,10 @@ public sealed class ThemeManager
         var resources = Application.Current.Resources;
         foreach (var (name, hex) in dark ? Dark : Light)
         {
-            if (resources[name] is SolidColorBrush brush)
-                brush.Color = (Color)ColorConverter.ConvertFromString(hex);
-            else
-                resources[name] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex));
+            // XAML brushes may be frozen (immutable) after loading BAML.
+            // Replace dictionary values instead of mutating the existing brush;
+            // DynamicResource references then resolve the new value.
+            resources[name] = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex));
         }
     }
 }
