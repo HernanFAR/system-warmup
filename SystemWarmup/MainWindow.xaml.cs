@@ -42,6 +42,8 @@ public partial class MainWindow : Window
         Loaded += async (_, _) =>
         {
             await RefreshAsync();
+            if (_settings.Updates?.CheckOnLaunch == true)
+                _ = CheckUpdateOnLaunchAsync();
             if (Environment.GetCommandLineArgs().Contains("--startup") && _settings.ApplyAtLogin)
                 await ApplyAsync(fromStartup: true);
         };
@@ -58,6 +60,22 @@ public partial class MainWindow : Window
         _settings.Theme = string.Equals(_settings.Theme, "Light", StringComparison.OrdinalIgnoreCase) ? "Dark" : "Light";
         _settings.Save();
         ApplyTheme();
+    }
+    private async Task CheckUpdateOnLaunchAsync()
+    {
+        try
+        {
+            using var updater = new UpdateService();
+            var info = await updater.CheckAsync(_settings.Updates, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 1, 0));
+            if (info is not null)
+                Log($"Nueva versión disponible: {info.Tag}. Abre Actualizaciones para revisar.");
+        }
+        catch (Exception ex) { Log("No se pudo consultar actualizaciones: " + ex.Message); }
+    }
+    private void Updates_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new UpdateWindow(_settings) { Owner = this };
+        dialog.ShowDialog();
     }
     private Profile? Current => ProfilePicker.SelectedItem as Profile;
 
