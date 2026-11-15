@@ -31,6 +31,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = this;
         ApplyTheme();
+        UpdateInstalledLabel();
         ProfilePicker.ItemsSource = _settings.Profiles;
         ProfilePicker.SelectedItem = _settings.Profiles.FirstOrDefault(p => p.Name == _settings.SelectedProfile)
             ?? _settings.Profiles.FirstOrDefault();
@@ -61,21 +62,41 @@ public partial class MainWindow : Window
         _settings.Save();
         ApplyTheme();
     }
+    private void UpdateInstalledLabel()
+    {
+        var installed = UpdateService.ReadInstalled();
+        string assembly = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.1.0";
+        UpdateStatusButton.Content = installed?.Identity ?? "v" + assembly;
+        UpdateNotice.Text = "";
+    }
     private async Task CheckUpdateOnLaunchAsync()
     {
         try
         {
             using var updater = new UpdateService();
-            var info = await updater.CheckAsync(_settings.Updates, System.Reflection.Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 1, 0));
+            var info = await updater.CheckAsync(_settings.Updates,
+                System.Reflection.Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 1, 0),
+                UpdateService.ReadInstalled());
             if (info is not null)
+            {
+                UpdateNotice.Text = "● " + info.Tag + " disponible";
                 Log($"Nueva versión disponible: {info.Tag}. Abre Actualizaciones para revisar.");
+            }
         }
-        catch (Exception ex) { Log("No se pudo consultar actualizaciones: " + ex.Message); }
+        catch (Exception ex)
+        {
+            UpdateNotice.Text = "No se pudo comprobar";
+            UpdateNotice.ToolTip = ex.Message;
+            Log("No se pudo consultar actualizaciones: " + ex.Message);
+        }
     }
-    private void Updates_Click(object sender, RoutedEventArgs e)
+    private async void Updates_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new UpdateWindow(_settings) { Owner = this };
         dialog.ShowDialog();
+        UpdateInstalledLabel();
+        if (_settings.Updates.CheckOnLaunch)
+            await CheckUpdateOnLaunchAsync();
     }
     private Profile? Current => ProfilePicker.SelectedItem as Profile;
 
