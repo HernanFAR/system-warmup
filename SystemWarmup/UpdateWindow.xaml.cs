@@ -126,7 +126,6 @@ public partial class UpdateWindow : Window
             string executable = Environment.ProcessPath ?? "";
             string appDirectory = Path.GetDirectoryName(executable) ?? "";
             if (!Path.GetFileName(executable).Equals("SystemWarmup.exe", StringComparison.OrdinalIgnoreCase) ||
-                !File.Exists(Path.Combine(appDirectory, "SystemWarmup.dll")) ||
                 appDirectory.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase) ||
                 !new[] { "SystemWarmup", "SystemWarmup-win-x64" }.Contains(Path.GetFileName(appDirectory), StringComparer.OrdinalIgnoreCase))
                 throw new InvalidOperationException("Instala la aplicación en una carpeta exclusiva llamada SystemWarmup (o SystemWarmup-win-x64) antes de actualizar. No se reemplazará una carpeta compartida.");
