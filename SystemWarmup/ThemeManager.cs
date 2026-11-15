@@ -23,8 +23,8 @@ public sealed class ThemeManager
         ["BadgeBrush"] = "#1B3B37",
         ["BadgeTextBrush"] = "#78E8C2",
         ["AccentTextBrush"] = "#081B17",
-        ["InputBrush"] = "#EAF3FF",
-        ["InputTextBrush"] = "#172239",
+        ["InputBrush"] = "#25334D",
+        ["InputTextBrush"] = "#EDF4FF",
         ["FooterBrush"] = "#70849F"
     };
 
