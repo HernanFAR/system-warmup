@@ -227,3 +227,13 @@ Para futuros experimentos, distinguir al menos: **(a)** contexto previo disponib
 **Inspiración vs ejecución:** VSlices Tooling utiliza operaciones explícitas de actualización y, para determinadas fuentes instaladas, separación entre preparación, validación y reemplazo con recuperación. System Warmup aplica un mecanismo propio para sus binarios de escritorio; no se atribuye haber ejecutado Tooling ni reutilizado sus APIs.
 
 **Verificación pendiente:** probar una release firmada por el proveedor de hosting, los permisos de Windows, compatibilidad de versiones, fallo de descarga, fallo de copia, rollback y relanzamiento. La compilación de CI solo valida la construcción; no demuestra una actualización de extremo a extremo.
+
+## 15. Revisión de canales y builds de desarrollo
+
+La petición posterior cambió el contrato de actualización. Los canales son **Release** (release estable), **Preview** (pre-release) y **Build** (CI asociada al PR configurado). El canal Build no requiere crear tags ni GitHub Releases.
+
+La configuración `UpdateOptions` incluye `Repository`, `Channel`, `PullRequest` y `CheckOnLaunch`. El mecanismo de autenticación Build reutiliza el orden observado en VSlices Tooling: `GH_TOKEN`, `GITHUB_TOKEN`, `gh auth token`; no persiste secretos. Para Build se comprueba que el PR esté abierto, se busca la ejecución reciente del workflow para el commit HEAD, se exige resultado exitoso y se selecciona el artefacto no expirado `SystemWarmup-win-x64` con SHA-256 publicado por GitHub. Falta de artefacto/credencial/CI exitosa es un resultado observable y no debe ocultarse tras un build viejo.
+
+La identidad visible es `build-<PR>-<run_number>`. El registro de instalación conserva adicionalmente el SHA y el identificador de ejecución para trazabilidad. El indicador de la ventana principal anuncia una actualización comprobada del canal elegido; sin actualización muestra únicamente la versión instalada. El usuario confirma la instalación; el componente externo realiza copia de seguridad y reemplazo después de que cierra la UI.
+
+**Diferencia frente al requisito original:** el canal Build y la reutilización de autenticación surgieron de aclaraciones posteriores, mientras que el origen GitHub Releases para todos los canales fue una decisión inicial del asistente corregida tras recibir esa evidencia. **Estado:** código integrado; compilación CI y prueba real de descarga/instalación deben verificarse separadamente.
