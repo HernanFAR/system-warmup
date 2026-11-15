@@ -1,6 +1,6 @@
 # System Warmup
 
-**Lightweight Windows desktop profile manager** — experimental WPF/.NET 8 application for reducing background activity on a low-end development laptop.
+**Lightweight Windows desktop profile manager** — experimental WPF/.NET 11 application for reducing background activity on a low-end development laptop.
 
 ## Capabilities (v0.1)
 
@@ -17,7 +17,7 @@
 
 ## Requirements
 
-Windows 10/11, .NET 8 Desktop Runtime (or the .NET 8 SDK for development), administrator permissions for changes and task registration.
+Windows 10/11, .NET 11 Desktop Runtime (or the .NET 11 SDK for development), administrator permissions for changes and task registration.
 
 No NuGet dependencies. WPF native controls (good fit for resource-constrained machines). Windows-only.
 
@@ -88,3 +88,12 @@ En `Build`, el archivo proviene de `archive_download_url` de Actions y se compru
 El instalador externo reemplaza **la carpeta completa** de la aplicación. Por protección, solo se admite ejecutar una instalación publicada desde una carpeta dedicada cuyo nombre sea `SystemWarmup` o `SystemWarmup-win-x64`. No lo ejecutes para actualizar desde el Escritorio compartido, una raíz de proyectos o una carpeta con archivos ajenos. La aplicación rechaza esa operación antes de descargarla si detecta un directorio diferente. Ejemplo seguro: `%LOCALAPPDATA%\\Programs\\SystemWarmup`.
 
 Para autenticación de Build, reutiliza `GH_TOKEN`, `GITHUB_TOKEN` o `gh auth token`. La preferencia `CheckOnLaunch` viene activada para instalaciones nuevas, pero **solo consulta metadatos** y no descarga software sin confirmación. Si ya tienes `settings.json`, conserva el valor anterior hasta cambiarlo desde la ventana Actualizaciones.
+
+
+## .NET 11 and Native AOT status (2026-11-15)
+
+The WPF application targets **`net11.0-windows`** and CI publishes the Windows x64 application as **self-contained** (`--self-contained true`), so the end-user machine does not need to preinstall .NET 11 Desktop Runtime. The published output remains a directory containing multiple application/runtime files; keep that directory intact.
+
+**This is not Native AOT.** WPF does not currently support Native AOT compilation; `PublishAot` is explicitly false in the project and no claim of native-AOT publication is made. Migrating the entire application to Native AOT would require a different UI stack; a future small native-AOT helper is a separate potential experiment. The actual RAM/startup differences should be measured rather than assumed.
+
+The `tests/ThemeSmoke` regression also targets .NET 11 and runs on Windows CI. This migration preserves updater archive names so existing Release/Preview/Build discovery does not need to change.
