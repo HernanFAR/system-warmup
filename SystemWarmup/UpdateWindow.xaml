@@ -1,0 +1,71 @@
+<Window x:Class="SystemWarmup.UpdateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="System Warmup · Actualizaciones" Width="680" Height="640" MinWidth="590" MinHeight="570"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResize" Background="{DynamicResource WindowBrush}">
+  <Grid Margin="28">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <StackPanel Margin="0,0,0,22">
+      <TextBlock Text="ACTUALIZACIONES" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
+      <TextBlock Text="Mantén System Warmup al día." FontSize="27" FontWeight="SemiBold" Margin="0,7,0,4"/>
+      <TextBlock Text="Origen, canal y comprobación configurables. Ninguna versión se instala sin tu autorización."
+                 Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" FontSize="12"/>
+    </StackPanel>
+    <Border Grid.Row="1" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="1" CornerRadius="12" Padding="19" Margin="0,0,0,15">
+      <StackPanel>
+        <Grid Margin="0,0,0,12">
+          <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+          <TextBlock Text="FUENTE DE ACTUALIZACIONES" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold"/>
+          <TextBlock x:Name="CurrentVersion" Grid.Column="1" Foreground="{DynamicResource AccentBrush}" FontSize="12"/>
+        </Grid>
+        <TextBlock Text="Repositorio de GitHub (propietario/repositorio)" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,0,0,5"/>
+        <TextBox x:Name="RepositoryBox" Margin="0,0,0,12" ToolTip="Repositorio confiable desde el que descargar versiones"/>
+        <TextBlock Text="Canal de publicación" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,0,0,5"/>
+        <ComboBox x:Name="ChannelBox" Margin="0,0,0,13" MinHeight="34" SelectionChanged="Channel_Changed">
+          <ComboBoxItem Content="Release"/>
+          <ComboBoxItem Content="Preview"/>
+          <ComboBoxItem Content="Build"/>
+        </ComboBox>
+        <StackPanel x:Name="BuildSettings" Visibility="Collapsed" Margin="0,0,0,12">
+          <TextBlock Text="Número del Pull Request activo" Foreground="{DynamicResource MutedBrush}" Margin="0,0,0,5"/>
+          <TextBox x:Name="PullRequestBox" ToolTip="PR abierto del que se obtendrá la última ejecución de CI"/>
+          <TextBlock Text="Requiere GH_TOKEN / GITHUB_TOKEN o GitHub CLI autenticado." FontSize="11" TextWrapping="Wrap"
+                     Foreground="{DynamicResource MutedBrush}" Margin="0,6,0,0"/>
+        </StackPanel>
+        <CheckBox x:Name="CheckOnLaunchBox" Content="Buscar nuevas versiones al abrir System Warmup"
+                  Margin="0,0,0,12"/>
+        <TextBlock Text="La búsqueda no instala, ejecuta ni descarga automáticamente una versión."
+                   Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" FontSize="11"/>
+      </StackPanel>
+    </Border>
+    <Border Grid.Row="2" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="1" CornerRadius="12" Padding="19" Margin="0,0,0,12">
+      <DockPanel LastChildFill="True">
+        <TextBlock DockPanel.Dock="Top" Text="ESTADO DE LA ACTUALIZACIÓN" Foreground="{DynamicResource MutedBrush}"
+                   FontSize="11" FontWeight="Bold" Margin="0,0,0,12"/>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel>
+            <TextBlock x:Name="StatusText" Text="Sin comprobación reciente." TextWrapping="Wrap" FontSize="14" Margin="0,0,0,11"/>
+            <TextBlock x:Name="ReleaseTitle" FontWeight="SemiBold" FontSize="18" Margin="0,0,0,8"/>
+            <TextBox x:Name="ReleaseNotes" IsReadOnly="True" TextWrapping="Wrap"
+                     VerticalScrollBarVisibility="Auto" MaxHeight="115" Background="{DynamicResource LogBrush}"
+                     Foreground="{DynamicResource TextBrush}" BorderThickness="0" Visibility="Collapsed"/>
+          </StackPanel>
+        </ScrollViewer>
+      </DockPanel>
+    </Border>
+    <Grid Grid.Row="3" Margin="0,0,0,3">
+      <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+      <StackPanel Orientation="Horizontal">
+        <Button x:Name="SaveButton" Content="Guardar configuración" Click="Save_Click"/>
+        <Button x:Name="CheckButton" Content="Buscar actualización" Click="Check_Click"/>
+      </StackPanel>
+      <Button x:Name="InstallButton" Grid.Column="1" Content="Descargar e instalar" IsEnabled="False"
+              Background="{DynamicResource AccentBrush}" Foreground="{DynamicResource AccentTextBrush}"
+              BorderBrush="{DynamicResource AccentBrush}" Click="Install_Click"/>
+    </Grid>
+  </Grid>
+</Window>

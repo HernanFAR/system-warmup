@@ -1,0 +1,30 @@
+name: Build Windows desktop
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '11.0.x'
+      - name: Build
+        run: dotnet build SystemWarmup/SystemWarmup.csproj -c Release
+      - name: Test frozen WPF brushes and theme switching
+        run: dotnet run --project tests/ThemeSmoke/ThemeSmoke.csproj -c Release
+      - name: Publish portable app
+        run: dotnet publish SystemWarmup/SystemWarmup.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:IncludeAllContentForSelfExtract=true -p:EnableCompressionInSingleFile=true -o dist
+      - name: Verify single-file output
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem dist -File)
+          if ($files.Count -ne 1 -or $files[0].Name -ne 'SystemWarmup.exe') {
+            throw "Expected only SystemWarmup.exe, got: $($files.Name -join ', ')"
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SystemWarmup-win-x64
+          path: dist/
