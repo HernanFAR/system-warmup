@@ -137,3 +137,41 @@ Hernán rechazó que la actualización de desarrollo dependiera exclusivamente d
 Pidió representar la identidad de Build como `build-[PR-number]-[build-number]`, mostrar en la ventana principal cuándo hay una actualización para el canal seleccionado, y permitir iniciar desde allí el proceso de actualización mediante el actualizador externo. Posteriormente confirmó en su PC que GitHub CLI estaba autenticado con permisos para consultar los artefactos de System Warmup y que aceptaba usar autenticación de lectura para el canal de desarrollo.
 
 La política exacta de selección del workflow, los errores admitidos y la persistencia de identidad instalada son decisiones técnicas de la realización, no frases originalmente impuestas por el usuario.
+
+## 14. Advertencia de Windows y confianza en el ejecutable
+
+Al ejecutar una compilación descargada, Hernán observó la advertencia de Microsoft Defender SmartScreen que identificaba a `SystemWarmup.exe` como aplicación de editor desconocido. Preguntó cómo funcionan las firmas de código y consideró valioso experimentar más adelante con una **firma Authenticode autofirmada**, instalada como confiable de manera explícita en los equipos de prueba.
+
+Solicitó **registrar ese trabajo como un issue futuro, después del entregable del día**; no pidió que la firma bloqueara el desarrollo actual. Se creó [el issue #2](https://github.com/HernanFAR/system-warmup/issues/2). La decisión de estudiar la custodia de claves, la verificación y la integración con el actualizador corresponde al trabajo técnico pendiente, no a una funcionalidad ya disponible.
+
+## 15. Evidencia de fallo real: la aplicación se cerraba al iniciar
+
+Hernán aportó registros de **Windows Event Viewer** tras observar que System Warmup se iniciaba pero terminaba abruptamente, sin encontrar un informe propio en las rutas documentadas.
+
+La excepción reportada señalaba `ThemeManager.Apply(Boolean dark)` y `InvalidOperationException` al intentar modificar un objeto WPF de solo lectura. El diagnóstico reveló que la aplicación fallaba durante la construcción de la ventana, antes de inicializar su registro habitual de actividad.
+
+Esto no fue un nuevo requisito funcional, sino **evidencia de uso real que obligó a corregir la realización**. La capacidad de registrar fallos fatales antes de construir la ventana principal permanece como oportunidad futura.
+
+## 16. Segunda revisión visual observada en el equipo
+
+Hernán compartió capturas con una versión que ya se ejecutaba. En modo diurno, el aspecto general era coherente; al pasar a modo nocturno, sin embargo, **el fondo exterior de la ventana permanecía blanco**, por lo que el título claro perdía contraste. Ciertos selectores conservaban también colores incompatibles con el tema oscuro.
+
+Solicitó corregir «esto», apoyándose en las capturas, sin pedir sustituir la tecnología visual ni rediseñar el sistema. El problema observado debe conservarse como evidencia de que **compilar no equivale a validar la interfaz en uso**.
+
+## 17. Evolución de la distribución: .NET 11 y single-file
+
+Después de ejecutar la aplicación, Hernán preguntó si era posible **subirla a .NET 11 y publicarla como Native AOT**. Se investigó la compatibilidad y se identificó que WPF no admite Native AOT; por tanto, la realización conservó WPF y adoptó una publicación `self-contained` en .NET 11.
+
+Posteriormente solicitó expresamente **un ejecutable single-file**. La intención es simplificar la distribución a un único archivo, no asumir que single-file sea equivalente a compilación Native AOT.
+
+Estas solicitudes son posteriores al desarrollo inicial y no deben incorporarse retrospectivamente como requisitos de origen.
+
+## 18. Continuidad experimental
+
+Los episodios anteriores muestran una secuencia observable:
+
+**necesidad expresada → realización asistida por IA → ejecución en Windows → evidencia de fallos o fricciones → revisión de implementación y distribución.**
+
+El registro distingue la experiencia del usuario de las decisiones adoptadas por el asistente. Por ejemplo, la elección de WPF, el reemplazo de `SolidColorBrush` congelados, el templating de `ComboBox` y las propiedades de publicación del SDK son decisiones de ingeniería, no requisitos funcionales formulados originalmente por Hernán.
+
+La narrativa se mantiene como reconstrucción **posterior** y contextualizada por VSlices; no es una captura independiente de instrucciones iniciales ni una prueba de causalidad de VSlices sobre las decisiones.
