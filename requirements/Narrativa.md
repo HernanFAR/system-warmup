@@ -121,3 +121,11 @@ Hernán precisó después de la reconstrucción documental que esta experiencia 
 Esta precisión es **una observación explícita posterior de Hernán**, no una medición del grado de influencia. Es posible que términos, preferencias de diseño, separación de responsabilidades, criterios de invariantes o hábitos de trazabilidad hayan influido en las respuestas del asistente incluso sin una ejecución formal de las herramientas o los protocolos VSlices. No debemos atribuir un mecanismo ni un efecto causal concreto sin evidencia adicional.
 
 La condición del caso puede describirse como **desarrollo conversacional asistido por IA con contexto previo de VSlices, sin un proceso VSlices formalmente instrumentado para esta realización**. Una comparación futura debe conservar esta exposición y evitar llamarlo «control libre de VSlices». Para contrastar el aporte de VSlices sería necesario distinguir contexto disponible, instrucciones, herramientas efectivamente invocadas, protocolo aplicado y artefactos de validación.
+
+## 12. Nueva solicitud: actualizar System Warmup desde la propia aplicación
+
+Hernán pidió explícitamente **una forma de actualizar System Warmup desde su interfaz**, inspirada en el mecanismo de actualización de VSlices Tooling. Quería que las decisiones de actualización fueran configurables en la UI y que esa configuración terminara persistida en un **JSON local sencillo**.
+
+La referencia a VSlices Tooling indica una inspiración compartida en la experiencia de desarrollo, no un requerimiento de integrar los dos sistemas ni de reproducir literalmente el código de Tooling. La elección del proveedor de releases, los mecanismos de verificación y la política de instalación son **decisiones de realización del asistente** y deben documentarse separadamente.
+
+Esta solicitud se incorporó después de la primera aplicación, los perfiles y la corrección de temas. No fue parte de la intención original del primer bootstrap.
