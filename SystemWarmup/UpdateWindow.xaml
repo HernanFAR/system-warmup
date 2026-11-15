@@ -24,10 +24,17 @@
         <TextBlock Text="Repositorio de GitHub (propietario/repositorio)" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,0,0,5"/>
         <TextBox x:Name="RepositoryBox" Margin="0,0,0,12" ToolTip="Repositorio confiable desde el que descargar versiones"/>
         <TextBlock Text="Canal de publicación" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,0,0,5"/>
-        <ComboBox x:Name="ChannelBox" Margin="0,0,0,13" MinHeight="34">
-          <ComboBoxItem Content="Stable" />
-          <ComboBoxItem Content="Prerelease"/>
+        <ComboBox x:Name="ChannelBox" Margin="0,0,0,13" MinHeight="34" SelectionChanged="Channel_Changed">
+          <ComboBoxItem Content="Release"/>
+          <ComboBoxItem Content="Preview"/>
+          <ComboBoxItem Content="Build"/>
         </ComboBox>
+        <StackPanel x:Name="BuildSettings" Visibility="Collapsed" Margin="0,0,0,12">
+          <TextBlock Text="Número del Pull Request activo" Foreground="{DynamicResource MutedBrush}" Margin="0,0,0,5"/>
+          <TextBox x:Name="PullRequestBox" ToolTip="PR abierto del que se obtendrá la última ejecución de CI"/>
+          <TextBlock Text="Requiere GH_TOKEN / GITHUB_TOKEN o GitHub CLI autenticado." FontSize="11" TextWrapping="Wrap"
+                     Foreground="{DynamicResource MutedBrush}" Margin="0,6,0,0"/>
+        </StackPanel>
         <CheckBox x:Name="CheckOnLaunchBox" Content="Buscar nuevas versiones al abrir System Warmup"
                   Margin="0,0,0,12"/>
         <TextBlock Text="La búsqueda no instala, ejecuta ni descarga automáticamente una versión."
