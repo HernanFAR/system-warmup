@@ -22,7 +22,7 @@ public sealed class UpdateOptions
     public int PullRequest { get; set; } = 1;
     public bool CheckOnLaunch { get; set; } = true;
 }
-public sealed record InstalledUpdate(string Channel, string Repository, string Identity, long RunId, string Commit);
+public sealed record InstalledUpdate(string Channel, string Repository, string Identity, long RunId, string Commit, int Attempt = 1);
 public sealed class Settings
 {
     public string SelectedProfile { get; set; } = "Benchmark";
