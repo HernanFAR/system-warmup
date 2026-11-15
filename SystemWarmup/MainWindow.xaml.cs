@@ -15,6 +15,7 @@ public partial class MainWindow : Window
     private readonly Settings _settings = Settings.Load();
     private readonly ObservableCollection<ServiceItem> _items = [];
     private bool _loading = true;
+    private readonly ThemeManager _theme = new();
     private bool _busy;
     private string _previousProfile = "";
     public DesiredState[] ActionOptions { get; } = Enum.GetValues<DesiredState>();
@@ -29,6 +30,7 @@ public partial class MainWindow : Window
              s.DisplayName.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase));
         InitializeComponent();
         DataContext = this;
+        ApplyTheme();
         ProfilePicker.ItemsSource = _settings.Profiles;
         ProfilePicker.SelectedItem = _settings.Profiles.FirstOrDefault(p => p.Name == _settings.SelectedProfile)
             ?? _settings.Profiles.FirstOrDefault();
@@ -43,6 +45,19 @@ public partial class MainWindow : Window
             if (Environment.GetCommandLineArgs().Contains("--startup") && _settings.ApplyAtLogin)
                 await ApplyAsync(fromStartup: true);
         };
+    }
+    private void ApplyTheme()
+    {
+        bool dark = !string.Equals(_settings.Theme, "Light", StringComparison.OrdinalIgnoreCase);
+        _theme.Apply(dark);
+        ThemeToggle.Content = dark ? "☀  Modo diurno" : "☾  Modo nocturno";
+        ThemeToggle.ToolTip = dark ? "Cambiar al tema claro" : "Cambiar al tema oscuro";
+    }
+    private void ThemeToggle_Click(object sender, RoutedEventArgs e)
+    {
+        _settings.Theme = string.Equals(_settings.Theme, "Light", StringComparison.OrdinalIgnoreCase) ? "Dark" : "Light";
+        _settings.Save();
+        ApplyTheme();
     }
     private Profile? Current => ProfilePicker.SelectedItem as Profile;
 

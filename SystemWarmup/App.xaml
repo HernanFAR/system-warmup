@@ -12,17 +12,29 @@
     <SolidColorBrush x:Key="AccentBrush" Color="#56E4BC"/>
     <SolidColorBrush x:Key="TextBrush" Color="#EDF4FF"/>
     <SolidColorBrush x:Key="MutedBrush" Color="#A6B5CB"/>
+    <SolidColorBrush x:Key="GridHeaderBrush" Color="#263650"/>
+    <SolidColorBrush x:Key="GridHeaderTextBrush" Color="#D4E1F3"/>
+    <SolidColorBrush x:Key="LogBrush" Color="#0C1526"/>
+    <SolidColorBrush x:Key="BadgeBrush" Color="#1B3B37"/>
+    <SolidColorBrush x:Key="BadgeTextBrush" Color="#78E8C2"/>
+    <SolidColorBrush x:Key="AccentTextBrush" Color="#081B17"/>
+    <SolidColorBrush x:Key="InputBrush" Color="#EAF3FF"/>
+    <SolidColorBrush x:Key="InputTextBrush" Color="#172239"/>
+    <SolidColorBrush x:Key="FooterBrush" Color="#70849F"/>
+    <Style TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+    </Style>
     <Style TargetType="Window">
-      <Setter Property="Background" Value="{StaticResource WindowBrush}"/>
-      <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource WindowBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
       <Setter Property="FontFamily" Value="Segoe UI"/>
     </Style>
     <Style TargetType="Button">
-      <Setter Property="Background" Value="{StaticResource Panel2Brush}"/>
-      <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource Panel2Brush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
       <Setter Property="Padding" Value="13,9"/>
       <Setter Property="BorderThickness" Value="1"/>
-      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
       <Setter Property="Cursor" Value="Hand"/>
       <Setter Property="Margin" Value="0,0,9,0"/>
       <Setter Property="Template">
@@ -39,22 +51,22 @@
       </Setter>
     </Style>
     <Style TargetType="TextBox">
-      <Setter Property="Background" Value="{StaticResource Panel2Brush}"/>
-      <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
-      <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource Panel2Brush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
       <Setter Property="Padding" Value="10,8"/>
     </Style>
     <Style TargetType="ComboBox">
       <Setter Property="Margin" Value="0,0,0,0"/>
       <Setter Property="MinHeight" Value="32"/>
-      <Setter Property="Foreground" Value="#172239"/>
-      <Setter Property="Background" Value="#EAF3FF"/>
+      <Setter Property="Foreground" Value="{DynamicResource InputTextBrush}"/>
+      <Setter Property="Background" Value="{DynamicResource InputBrush}"/>
     </Style>
     <Style TargetType="DataGrid">
-      <Setter Property="Background" Value="{StaticResource PanelBrush}"/>
-      <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
-      <Setter Property="RowBackground" Value="{StaticResource PanelBrush}"/>
-      <Setter Property="AlternatingRowBackground" Value="{StaticResource Panel2Brush}"/>
+      <Setter Property="Background" Value="{DynamicResource PanelBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+      <Setter Property="RowBackground" Value="{DynamicResource PanelBrush}"/>
+      <Setter Property="AlternatingRowBackground" Value="{DynamicResource Panel2Brush}"/>
       <Setter Property="GridLinesVisibility" Value="None"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="HeadersVisibility" Value="Column"/>
@@ -65,17 +77,17 @@
       <Setter Property="SelectionMode" Value="Single"/>
     </Style>
     <Style TargetType="DataGridColumnHeader">
-      <Setter Property="Background" Value="#263650"/>
-      <Setter Property="Foreground" Value="#D4E1F3"/>
+      <Setter Property="Background" Value="{DynamicResource GridHeaderBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource GridHeaderTextBrush}"/>
       <Setter Property="Padding" Value="10,6"/>
     </Style>
     <Style TargetType="DataGridCell">
-      <Setter Property="Foreground" Value="#EAF2FF"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
       <Setter Property="BorderThickness" Value="0"/>
       <Setter Property="Padding" Value="8,0"/>
     </Style>
     <Style TargetType="CheckBox">
-      <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+      <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
     </Style>
   </Application.Resources>
 </Application>

@@ -19,6 +19,7 @@ public sealed class Settings
 {
     public string SelectedProfile { get; set; } = "Benchmark";
     public bool ApplyAtLogin { get; set; }
+    public string Theme { get; set; } = "Dark";
     public List<string> BaselineRunningServices { get; set; } = [];
     public DateTimeOffset? BaselineCapturedAt { get; set; }
     public List<Profile> Profiles { get; set; } = [];

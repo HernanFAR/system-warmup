@@ -13,14 +13,15 @@
     <Grid Grid.Row="0" Margin="0,0,0,23">
       <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
       <StackPanel>
-        <TextBlock Text="SYSTEM / WARMUP" FontSize="13" FontWeight="Bold" Foreground="#56E4BC"/>
+        <TextBlock Text="SYSTEM / WARMUP" FontSize="13" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
         <TextBlock Text="Tu Windows, bajo control." FontSize="30" FontWeight="SemiBold" Margin="0,6,0,5"/>
-        <TextBlock Text="Perfiles, servicios y recursos. Sin procesos mágicos en segundo plano." Foreground="#A6B5CB" FontSize="13"/>
+        <TextBlock Text="Perfiles, servicios y recursos. Sin procesos mágicos en segundo plano." Foreground="{DynamicResource MutedBrush}" FontSize="13"/>
       </StackPanel>
       <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-        <Border Background="#1B3B37" CornerRadius="15" Padding="13,8" Margin="0,0,12,0">
-          <TextBlock Text="●  LOCAL · ADMIN" Foreground="#78E8C2" FontWeight="SemiBold" FontSize="11"/>
+        <Border Background="{DynamicResource BadgeBrush}" CornerRadius="15" Padding="13,8" Margin="0,0,12,0">
+          <TextBlock Text="●  LOCAL · ADMIN" Foreground="{DynamicResource BadgeTextBrush}" FontWeight="SemiBold" FontSize="11"/>
         </Border>
+        <Button x:Name="ThemeToggle" Content="☀  Modo diurno" Click="ThemeToggle_Click" ToolTip="Alternar entre tema claro y oscuro"/>
         <Button Content="Actualizar servicios" Click="Refresh_Click"/>
       </StackPanel>
     </Grid>
@@ -28,31 +29,31 @@
       <Grid.ColumnDefinitions>
         <ColumnDefinition/><ColumnDefinition Width="13"/><ColumnDefinition/><ColumnDefinition Width="13"/><ColumnDefinition/>
       </Grid.ColumnDefinitions>
-      <Border Background="#151E30" BorderBrush="#2C3951" BorderThickness="1" CornerRadius="13" Padding="20">
-        <StackPanel><TextBlock Text="SERVICIOS EN EJECUCIÓN" Foreground="#A6B5CB" FontSize="11" FontWeight="Bold"/>
+      <Border Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="13" Padding="20">
+        <StackPanel><TextBlock Text="SERVICIOS EN EJECUCIÓN" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold"/>
           <TextBlock x:Name="RunningValue" Text="—" FontSize="30" FontWeight="SemiBold" Margin="0,5,0,2"/>
-          <TextBlock Text="Detectados directamente en Windows" Foreground="#A6B5CB" FontSize="11"/></StackPanel>
+          <TextBlock Text="Detectados directamente en Windows" Foreground="{DynamicResource MutedBrush}" FontSize="11"/></StackPanel>
       </Border>
-      <Border Grid.Column="2" Background="#151E30" BorderBrush="#2C3951" BorderThickness="1" CornerRadius="13" Padding="20">
-        <StackPanel><TextBlock Text="MEMORIA DISPONIBLE" Foreground="#A6B5CB" FontSize="11" FontWeight="Bold"/>
-          <TextBlock x:Name="MemoryValue" Text="—" FontSize="30" FontWeight="SemiBold" Foreground="#56E4BC" Margin="0,5,0,2"/>
-          <TextBlock Text="RAM física, medida al actualizar" Foreground="#A6B5CB" FontSize="11"/></StackPanel>
+      <Border Grid.Column="2" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="13" Padding="20">
+        <StackPanel><TextBlock Text="MEMORIA DISPONIBLE" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold"/>
+          <TextBlock x:Name="MemoryValue" Text="—" FontSize="30" FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}" Margin="0,5,0,2"/>
+          <TextBlock Text="RAM física, medida al actualizar" Foreground="{DynamicResource MutedBrush}" FontSize="11"/></StackPanel>
       </Border>
-      <Border Grid.Column="4" Background="#151E30" BorderBrush="#2C3951" BorderThickness="1" CornerRadius="13" Padding="20">
-        <StackPanel><TextBlock Text="REGLAS DEL PERFIL" Foreground="#A6B5CB" FontSize="11" FontWeight="Bold"/>
+      <Border Grid.Column="4" Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="13" Padding="20">
+        <StackPanel><TextBlock Text="REGLAS DEL PERFIL" Foreground="{DynamicResource MutedBrush}" FontSize="11" FontWeight="Bold"/>
           <TextBlock x:Name="RulesValue" Text="—" FontSize="30" FontWeight="SemiBold" Margin="0,5,0,2"/>
-          <TextBlock x:Name="BaselineText" Text="Sin captura de inicio" Foreground="#A6B5CB" FontSize="11"/></StackPanel>
+          <TextBlock x:Name="BaselineText" Text="Sin captura de inicio" Foreground="{DynamicResource MutedBrush}" FontSize="11"/></StackPanel>
       </Border>
     </Grid>
     <Grid Grid.Row="2">
       <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="325"/></Grid.ColumnDefinitions>
-      <Border Background="#151E30" CornerRadius="14" BorderBrush="#2C3951" BorderThickness="1" Padding="17" Margin="0,0,14,0">
+      <Border Background="{DynamicResource PanelBrush}" CornerRadius="14" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="17" Margin="0,0,14,0">
         <DockPanel>
           <Grid DockPanel.Dock="Top" Margin="0,0,0,15">
             <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
             <StackPanel>
               <TextBlock Text="Servicios detectados" FontSize="20" FontWeight="SemiBold"/>
-              <TextBlock Text="Elige Ignorar, Mantener o Detener por servicio." Foreground="#A6B5CB" FontSize="12" Margin="0,4,0,0"/>
+              <TextBlock Text="Elige Ignorar, Mantener o Detener por servicio." Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,4,0,0"/>
             </StackPanel>
             <Button Grid.Column="1" Content="Capturar estado actual" Click="Capture_Click" VerticalAlignment="Center"/>
           </Grid>
@@ -79,13 +80,13 @@
           </DataGrid>
         </DockPanel>
       </Border>
-      <Border Grid.Column="1" Background="#151E30" CornerRadius="14" BorderBrush="#2C3951" BorderThickness="1" Padding="18">
+      <Border Grid.Column="1" Background="{DynamicResource PanelBrush}" CornerRadius="14" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="18">
         <DockPanel>
           <StackPanel DockPanel.Dock="Top">
-            <TextBlock Text="PERFIL ACTIVO" Foreground="#56E4BC" FontSize="11" FontWeight="Bold"/>
+            <TextBlock Text="PERFIL ACTIVO" Foreground="{DynamicResource AccentBrush}" FontSize="11" FontWeight="Bold"/>
             <ComboBox x:Name="ProfilePicker" Margin="0,10,0,11" DisplayMemberPath="Name"
                       SelectionChanged="Profile_Changed" FontSize="15"/>
-            <TextBlock x:Name="ProfileDescription" Foreground="#A6B5CB" FontSize="12" TextWrapping="Wrap" MinHeight="36"/>
+            <TextBlock x:Name="ProfileDescription" Foreground="{DynamicResource MutedBrush}" FontSize="12" TextWrapping="Wrap" MinHeight="36"/>
             <StackPanel Orientation="Horizontal" Margin="0,13,0,10">
               <Button Content="Duplicar" Click="Clone_Click"/>
               <Button Content="Eliminar" Click="Delete_Click"/>
@@ -95,17 +96,17 @@
             <CheckBox x:Name="LaunchDockerBox" Content="Iniciar Docker Desktop" Margin="0,8" Checked="ProfileOptions_Changed" Unchecked="ProfileOptions_Changed"/>
             <CheckBox x:Name="ApplyAtLogin" Content="Aplicar perfil al iniciar Windows" Margin="0,8" Checked="Settings_Changed" Unchecked="Settings_Changed"/>
             <TextBlock Text="Autoinicio: una sola instancia; cerrar la app la termina. La configuración se guarda en JSON local."
-                       TextWrapping="Wrap" Foreground="#A6B5CB" FontSize="11" Margin="0,0,0,13"/>
+                       TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" FontSize="11" Margin="0,0,0,13"/>
             <Button Content="Habilitar inicio con Windows" Click="InstallStartup_Click" Margin="0,3,0,5"/>
             <Button Content="Deshabilitar inicio" Click="RemoveStartup_Click" Margin="0,3,0,10"/>
             <Separator Margin="0,6"/>
-            <TextBlock Text="ACCIONES" Foreground="#A6B5CB" FontWeight="Bold" FontSize="11" Margin="0,15,0,10"/>
+            <TextBlock Text="ACCIONES" Foreground="{DynamicResource MutedBrush}" FontWeight="Bold" FontSize="11" Margin="0,15,0,10"/>
             <Button Content="Ver plan de cambios" Click="Preview_Click" Margin="0,0,0,8"/>
             <Button x:Name="ApplyButton" Content="Aplicar este perfil" Click="Apply_Click"
-                    Background="#56E4BC" Foreground="#0B1020" BorderBrush="#56E4BC" FontWeight="Bold" Margin="0,0,0,8"/>
+                    Background="{DynamicResource AccentBrush}" Foreground="{DynamicResource AccentTextBrush}" BorderBrush="{DynamicResource AccentBrush}" FontWeight="Bold" Margin="0,0,0,8"/>
           </StackPanel>
           <TextBox x:Name="ActivityLog" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
-                   Background="#0C1526" BorderThickness="0" Foreground="#B7C9DF" FontSize="11"
+                   Background="{DynamicResource LogBrush}" BorderThickness="0" Foreground="{DynamicResource MutedBrush}" FontSize="11"
                    Margin="0,12,0,0" />
         </DockPanel>
       </Border>
@@ -113,8 +114,8 @@
     <Grid Grid.Row="3" Margin="0,16,0,0">
       <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
       <TextBlock x:Name="FooterText" Text="Exploración local · No se deshabilitan servicios permanentemente"
-                 Foreground="#A6B5CB" FontSize="11"/>
-      <TextBlock Grid.Column="1" Text="SYSTEM WARMUP  /  v0.1" Foreground="#70849F" FontSize="11"/>
+                 Foreground="{DynamicResource MutedBrush}" FontSize="11"/>
+      <TextBlock Grid.Column="1" Text="SYSTEM WARMUP  /  v0.1" Foreground="{DynamicResource FooterBrush}" FontSize="11"/>
     </Grid>
   </Grid>
 </Window>
