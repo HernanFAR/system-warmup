@@ -1,0 +1,34 @@
+name: Publish System Warmup release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Publish Windows application
+        shell: pwsh
+        run: |
+          $version = '${{ github.ref_name }}'.TrimStart('v')
+          dotnet publish SystemWarmup/SystemWarmup.csproj -c Release -r win-x64 --self-contained false -p:Version=$version -o dist
+      - name: Pack release asset
+        shell: pwsh
+        run: |
+          Compress-Archive -Path (Join-Path 'dist' '*') -DestinationPath SystemWarmup-win-x64.zip
+          $hash = (Get-FileHash SystemWarmup-win-x64.zip -Algorithm SHA256).Hash
+          Set-Content -Path SystemWarmup-win-x64.sha256 -Value $hash
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = '${{ github.ref_name }}'
+          $flags = @()
+          if ($tag.Contains('-')) { $flags += '--prerelease' }
+          gh release create $tag SystemWarmup-win-x64.zip SystemWarmup-win-x64.sha256 --generate-notes @flags
