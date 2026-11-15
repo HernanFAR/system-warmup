@@ -16,7 +16,14 @@ jobs:
         shell: pwsh
         run: |
           $version = '${{ github.ref_name }}'.TrimStart('v')
-          dotnet publish SystemWarmup/SystemWarmup.csproj -c Release -r win-x64 --self-contained true -p:Version=$version -o dist
+          dotnet publish SystemWarmup/SystemWarmup.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:IncludeAllContentForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:Version=$version -o dist
+      - name: Verify single-file output
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem dist -File)
+          if ($files.Count -ne 1 -or $files[0].Name -ne 'SystemWarmup.exe') {
+            throw "Expected only SystemWarmup.exe, got: $($files.Name -join ', ')"
+          }
       - name: Pack release asset
         shell: pwsh
         run: |
