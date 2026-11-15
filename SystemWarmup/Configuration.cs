@@ -20,7 +20,7 @@ public sealed class UpdateOptions
     public string Repository { get; set; } = "HernanFAR/system-warmup";
     public string Channel { get; set; } = "Release";
     public int PullRequest { get; set; } = 1;
-    public bool CheckOnLaunch { get; set; } = false;
+    public bool CheckOnLaunch { get; set; } = true;
 }
 public sealed record InstalledUpdate(string Channel, string Repository, string Identity, long RunId, string Commit);
 public sealed class Settings
@@ -29,7 +29,6 @@ public sealed class Settings
     public bool ApplyAtLogin { get; set; }
     public string Theme { get; set; } = "Dark";
     public UpdateOptions Updates { get; set; } = new();
-    public InstalledUpdate? InstalledUpdate { get; set; }
     public List<string> BaselineRunningServices { get; set; } = [];
     public DateTimeOffset? BaselineCapturedAt { get; set; }
     public List<Profile> Profiles { get; set; } = [];
