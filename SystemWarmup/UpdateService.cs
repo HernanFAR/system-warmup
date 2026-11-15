@@ -249,5 +249,25 @@ public sealed class UpdateService : IDisposable
         return new PreparedUpdate(release, folder, extracted, script);
     }
 
+    public static InstalledUpdate? ReadInstalled()
+    {
+        string path = Path.Combine(Settings.Folder, "installed-update.json");
+        try
+        {
+            return File.Exists(path)
+                ? JsonSerializer.Deserialize<InstalledUpdate>(File.ReadAllText(path))
+                : null;
+        }
+        catch { return null; }
+    }
+
+    public static string PrepareInstallMetadata(AvailableUpdate update, string folder)
+    {
+        string path = Path.Combine(folder, "installed-update.json");
+        File.WriteAllText(path, JsonSerializer.Serialize(
+            new InstalledUpdate(update.Channel, update.Repository, update.Tag, update.RunId, update.Commit)));
+        return path;
+    }
+
     public void Dispose() => _client.Dispose();
 }
