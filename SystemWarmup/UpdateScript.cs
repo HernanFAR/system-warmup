@@ -12,7 +12,9 @@ param(
     [Parameter(Mandatory=$true)][string]$ApplicationDirectory,
     [Parameter(Mandatory=$true)][string]$StagedDirectory,
     [Parameter(Mandatory=$true)][int]$OldPid,
-    [Parameter(Mandatory=$true)][string]$LogFile
+    [Parameter(Mandatory=$true)][string]$LogFile,
+    [Parameter(Mandatory=$true)][string]$MetadataFile,
+    [Parameter(Mandatory=$true)][string]$InstalledMetadataPath
 )
 $ErrorActionPreference = 'Stop'
 function Write-Log([string]$message) {
@@ -56,6 +58,7 @@ try {
     if ($process.HasExited) {
         throw 'The updated application exited immediately after launch.'
     }
+    Copy-Item -LiteralPath $MetadataFile -Destination $InstalledMetadataPath -Force
     Write-Log "Installed new release. Previous installation retained at: $backup"
 }
 catch {
