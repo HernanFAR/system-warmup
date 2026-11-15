@@ -25,6 +25,8 @@ $name = Split-Path -Leaf $ApplicationDirectory
 $backup = Join-Path $parent ($name + ".previous-" + (Get-Date -Format 'yyyyMMdd-HHmmss'))
 $backupCreated = $false
 $newInstalled = $false
+$metadataApplied = $false
+$previousMetadata = $null
 try {
     Write-Log "Waiting for PID $OldPid to close."
     $deadline = (Get-Date).AddSeconds(120)
@@ -52,17 +54,30 @@ try {
     $newInstalled = $true
     $exe = Join-Path $ApplicationDirectory 'SystemWarmup.exe'
     if (-not (Test-Path -LiteralPath $exe)) { throw 'Copied executable is missing.' }
+    if (Test-Path -LiteralPath $InstalledMetadataPath) {
+        $previousMetadata = Get-Content -LiteralPath $InstalledMetadataPath -Raw
+    }
+    Copy-Item -LiteralPath $MetadataFile -Destination $InstalledMetadataPath -Force
+    $metadataApplied = $true
     $process = Start-Process -FilePath $exe -WorkingDirectory $ApplicationDirectory -PassThru
     Start-Sleep -Seconds 3
     $process.Refresh()
     if ($process.HasExited) {
         throw 'The updated application exited immediately after launch.'
     }
-    Copy-Item -LiteralPath $MetadataFile -Destination $InstalledMetadataPath -Force
     Write-Log "Installed new release. Previous installation retained at: $backup"
 }
 catch {
     Write-Log ("Update failed: " + $_.Exception.Message)
+    if ($metadataApplied) {
+        try {
+            if ($null -eq $previousMetadata) {
+                Remove-Item -LiteralPath $InstalledMetadataPath -Force -ErrorAction SilentlyContinue
+            } else {
+                Set-Content -LiteralPath $InstalledMetadataPath -Value $previousMetadata -NoNewline
+            }
+        } catch { Write-Log ("Could not restore previous version marker: " + $_.Exception.Message) }
+    }
     if ($backupCreated) {
         try {
             if (Test-Path -LiteralPath $ApplicationDirectory) {
