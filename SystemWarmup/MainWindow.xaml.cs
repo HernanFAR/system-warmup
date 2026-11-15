@@ -85,7 +85,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            UpdateNotice.Text = "No se pudo comprobar";
+            UpdateNotice.Text = "Build no disponible · revisar";
             UpdateNotice.ToolTip = ex.Message;
             Log("No se pudo consultar actualizaciones: " + ex.Message);
         }
