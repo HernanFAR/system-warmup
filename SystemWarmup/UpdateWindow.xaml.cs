@@ -21,7 +21,7 @@ public partial class UpdateWindow : Window
         InitializeComponent();
         _settings = settings;
         _current = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(0, 1, 0);
-        CurrentVersion.Text = "Actual: v" + _current.ToString(3);
+        CurrentVersion.Text = "Actual: " + (UpdateService.ReadInstalled()?.Identity ?? ("v" + _current.ToString(3)));
         RepositoryBox.Text = settings.Updates.Repository;
         ChannelBox.SelectedIndex = settings.Updates.Channel switch { "Preview" or "Prerelease" => 1, "Build" => 2, _ => 0 };
         PullRequestBox.Text = settings.Updates.PullRequest.ToString();
