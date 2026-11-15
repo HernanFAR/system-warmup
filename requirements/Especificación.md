@@ -207,3 +207,23 @@ En una futura ejecución basada en VSlices será posible observar qué conceptos
 Esta especificación refleja las decisiones efectivamente materializadas por el asistente, y algunas pueden compartir vocabulario o criterios con VSlices. Esa afinidad no demuestra por sí sola qué decisión fue causada por ese contexto. No se debe presentar esta realización como una línea base independiente, «sin VSlices», ni atribuirle una aplicación formal de VSlices que no está documentada.
 
 Para futuros experimentos, distinguir al menos: **(a)** contexto previo disponible al agente, **(b)** instrucción o procedimiento explícito, **(c)** herramientas/contratos VSlices utilizados realmente, **(d)** decisiones e implementación observables, **(e)** evidencia y resultados. Esta reconstrucción conserva una **línea base contextualizada**, no un grupo de control aislado.
+
+## 14. Actualización de la aplicación (evolución posterior a v0.1 inicial)
+
+**Origen del requisito:** solicitud expresa de Hernán de disponer de actualización desde la UI, con configuración persistida en JSON, inspirada en VSlices Tooling. **Mecanismo elegido por el asistente:** GitHub Releases con descarga explícita, SHA-256, preparación y script externo de reemplazo.
+
+| Concepto | Representación y operación | Límite |
+| --- | --- | --- |
+| Configuración de actualizaciones | `UpdateOptions`: `Repository`, `Channel`, `CheckOnLaunch` dentro de `Settings` | Se admite solo el formato GitHub `owner/repo` |
+| Publicación candidata | `AvailableUpdate`: tag/version, descripción, URL y SHA-256 | Requiere release público, archivo ZIP exacto y versión posterior |
+| Consulta | `UpdateService.CheckAsync` | La consulta no instala ni descarga ejecutables |
+| Preparación | `UpdateService.PrepareAsync`: descargar, comprobar digest y extraer | El paquete puede contener código ejecutable del repositorio confiado |
+| Instalación | `UpdateScript`: espera al cierre, respaldo, reemplazo, reapertura | Recuperación ante fallos ordinarios, no transacción atómica absoluta |
+| UI | `UpdateWindow` + botón en `MainWindow` | La persona debe confirmar la instalación |
+| Distribución | Workflow de tags `v*` publica `SystemWarmup-win-x64.zip` | No equivale a artefactos de CI ni garantiza que ya exista una release instalable |
+
+**Flujo conceptual:** configuración → descubrimiento de release → confirmación humana → descarga y comprobación SHA-256 → preparación → cierre de la aplicación → reemplazo con respaldo → reabrir y observar resultado.
+
+**Inspiración vs ejecución:** VSlices Tooling utiliza operaciones explícitas de actualización y, para determinadas fuentes instaladas, separación entre preparación, validación y reemplazo con recuperación. System Warmup aplica un mecanismo propio para sus binarios de escritorio; no se atribuye haber ejecutado Tooling ni reutilizado sus APIs.
+
+**Verificación pendiente:** probar una release firmada por el proveedor de hosting, los permisos de Windows, compatibilidad de versiones, fallo de descarga, fallo de copia, rollback y relanzamiento. La compilación de CI solo valida la construcción; no demuestra una actualización de extremo a extremo.
