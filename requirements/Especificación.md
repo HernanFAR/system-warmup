@@ -237,3 +237,68 @@ La configuración `UpdateOptions` incluye `Repository`, `Channel`, `PullRequest`
 La identidad visible es `build-<PR>-<run_number>`. El registro de instalación conserva adicionalmente el SHA y el identificador de ejecución para trazabilidad. El indicador de la ventana principal anuncia una actualización comprobada del canal elegido; sin actualización muestra únicamente la versión instalada. El usuario confirma la instalación; el componente externo realiza copia de seguridad y reemplazo después de que cierra la UI.
 
 **Diferencia frente al requisito original:** el canal Build y la reutilización de autenticación surgieron de aclaraciones posteriores, mientras que el origen GitHub Releases para todos los canales fue una decisión inicial del asistente corregida tras recibir esa evidencia. **Estado:** código integrado; compilación CI y prueba real de descarga/instalación deben verificarse separadamente.
+
+## 16. Seguridad de distribución: firma de código como exploración futura
+
+La primera ejecución distribuida mostró la advertencia de Microsoft Defender SmartScreen para un editor desconocido. Se acordó **investigar después del entregable** una firma Authenticode autofirmada para desarrollo; quedó registrada en el [issue #2](https://github.com/HernanFAR/system-warmup/issues/2).
+
+**Estado:** pendiente, no implementado. Un certificado autofirmado exige confianza local explícita y no elimina automáticamente la reputación/advertencias de SmartScreen. La firma del ejecutable y la comprobación SHA-256 del paquete atienden problemas relacionados pero no equivalentes; no se debe confundir integridad con seguridad del comportamiento.
+
+## 17. Incidente de arranque y corrección comprobable
+
+**Evidencia:** Windows Event Viewer proporcionado por Hernán mostró un `XamlParseException` originado por `InvalidOperationException` al intentar escribir la propiedad `Color` de un `SolidColorBrush` WPF en estado de solo lectura, dentro de `ThemeManager.Apply`. El error ocurría en el constructor de `MainWindow` y precedía al registro de actividad propio.
+
+**Modelo anterior:** actualizar una paleta modificando en el lugar los objetos brush ya cargados. **Límite observado:** los recursos XAML pueden estar congelados (*frozen*). **Revisión:** reemplazar cada entrada del `ResourceDictionary` por un nuevo `SolidColorBrush`, aprovechando `DynamicResource` para la actualización visual.
+
+**Evidencia automatizada:** se incorporó `tests/ThemeSmoke`, que crea un brush congelado y verifica reemplazo y alternancia oscuro → claro → oscuro en CI Windows. La compilación y esa prueba se ejecutaron satisfactoriamente. Esto **no demuestra por sí solo** el arranque completo ni la ausencia de otros errores visuales.
+
+**Brecha identificada:** registrar excepciones fatales desde `App.xaml.cs`, antes de crear `MainWindow`, en un medio recuperable cuando la interfaz no alcanza a mostrarse.
+
+## 18. Segundo defecto visual: fondo y controles del tema oscuro
+
+**Observación de Hernán:** el modo diurno se mostraba coherente, pero en el modo nocturno persistía un fondo blanco fuera de las tarjetas y selectores con texto/fondo de contraste insuficiente.
+
+**Revisión materializada:**
+
+- `MainWindow.xaml` declara explícitamente `Background="{DynamicResource WindowBrush}"` y `Foreground="{DynamicResource TextBrush}"`.
+- Los brushes de controles de selección pasan a contrastar dentro de la paleta oscura.
+- `App.xaml` introduce plantillas propias de `ComboBox` y `ComboBoxItem` para no depender exclusivamente de colores fijos de los controles nativos de Windows.
+
+**Estado de evidencia:** código modificado en la rama del PR. Una inspección visual posterior en el equipo de Hernán sigue siendo necesaria, especialmente para desplegables, selección mediante teclado, accesibilidad y escalado. Este episodio demuestra que las pruebas de cambio de recursos no sustituyen las pruebas de presentación.
+
+## 19. Migración a .NET 11 sin Native AOT
+
+Hernán preguntó por .NET 11 y Native AOT. Se decidió adoptar **`net11.0-windows`**, manteniendo WPF. El SDK y la arquitectura UI actuales no admiten compilar toda la aplicación WPF como Native AOT; `PublishAot` permanece en `false`.
+
+Se alinearon `SystemWarmup.csproj`, `tests/ThemeSmoke` y los workflows de GitHub Actions con .NET SDK 11. La estrategia inicialmente adoptada fue `self-contained` para Windows x64, de manera que la distribución no dependa de que el usuario instale el runtime de .NET 11.
+
+**No confundir:** `self-contained` incorpora el runtime administrado; no produce por sí mismo código nativo AOT.
+
+## 20. Publicación single-file y revisión de CI
+
+A solicitud posterior de Hernán, se configuraron los workflows de Build y Release para publicar con `PublishSingleFile=true`, `--self-contained true`, inclusión/extracción de dependencias nativas y compresión del bundle. El entregable distribuido debe contener **un solo archivo `SystemWarmup.exe`** (aunque .NET/WPF pueda extraer bibliotecas internas en ejecución).
+
+Se modificó el actualizador para aceptar paquetes que ya no contienen `SystemWarmup.dll` ni `SystemWarmup.runtimeconfig.json` como archivos sueltos. El mecanismo sigue utilizando ZIP de GitHub Actions o GitHub Releases como **transporte**, aunque el contenido útil sea un solo ejecutable. La actualización continúa siendo un reemplazo externo con respaldo de la carpeta dedicada.
+
+**Error de integración detectado por CI:** declarar `SelfContained=true` en el proyecto principal impedía que la prueba `ThemeSmoke` —ejecutable no self-contained— referenciara el proyecto, con `NETSDK1151`. La revisión fue **aplicar las propiedades de single-file/self-contained al publicar**, no a las compilaciones ordinarias.
+
+**Evidencia posterior:** [ejecución Windows CI 43766464077](https://github.com/HernanFAR/system-warmup/actions/runs/43766464077) completó build, prueba WPF, publicación, comprobación de **exactamente un archivo `SystemWarmup.exe`** y subida de artefacto. Se informó un artefacto comprimido de aproximadamente 61,7 MB.
+
+**Pendiente:** ejecutar en el equipo real el nuevo binario, validar alternancia visual y verificar una actualización completa desde una instalación multifichero hacia single-file, incluido rollback. Single-file **no equivale a Native AOT** ni garantiza mejor RAM o inicio; requiere mediciones.
+
+## 21. Evidencia y límites de la evolución
+
+| Etapa | Evidencia | Conclusión permitida |
+| --- | --- | --- |
+| Primer panel y configuración | Captura de Hernán | La interfaz llegó a ejecutarse; no prueba todas las operaciones |
+| Fallo fatal de temas | Event Viewer | Defecto preciso en modificación de brush congelado |
+| Corrección de recursos | CI y `ThemeSmoke` | El caso de brush congelado quedó cubierto; no asegura toda la UI |
+| Segundo problema de contraste | Capturas en Windows | El fondo y ciertos selectores no seguían el tema correctamente |
+| Corrección del contraste | Cambios XAML/C# | Corrección propuesta/implementada; verificación visual pendiente |
+| Migración a .NET 11 | Build/publish en CI | Compilación y distribución posibles sin AOT |
+| Primera configuración single-file | Fallo `NETSDK1151` | Las propiedades de despliegue afectaban indebidamente al proyecto de pruebas |
+| Single-file corregido | CI 43766464077 | Un solo `.exe` en salida publicada y pruebas verdes |
+| Actualización de instalación en Windows | Sin prueba de extremo a extremo | No declarar verificada todavía |
+| Firma Authenticode | Issue #2 | Exploración futura, no funcionalidad entregada |
+
+Este documento conserva el **modelo anterior → evidencia o tensión → revisión → estado posterior** sin transformar todas las hipótesis de ingeniería en requisitos originarios del usuario.
