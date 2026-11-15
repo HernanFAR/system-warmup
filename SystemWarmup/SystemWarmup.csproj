@@ -3,6 +3,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net11.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <!-- WPF is not Native AOT compatible; use an explicitly self-contained publish. -->
+    <PublishAot>false</PublishAot>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>SystemWarmup</AssemblyName>
