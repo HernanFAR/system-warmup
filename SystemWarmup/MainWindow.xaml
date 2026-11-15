@@ -63,7 +63,8 @@
             <DataGrid.Columns>
               <DataGridTextColumn Header="SERVICIO" Binding="{Binding DisplayName}" Width="*" IsReadOnly="True"/>
               <DataGridTextColumn Header="ESTADO" Binding="{Binding State}" Width="95" IsReadOnly="True"/>
-              <DataGridCheckBoxColumn Header="INICIO" Binding="{Binding Baseline}" Width="64" IsReadOnly="True"/>
+              <DataGridTextColumn Header="TIPO INICIO" Binding="{Binding StartMode}" Width="105" IsReadOnly="True"/>
+              <DataGridCheckBoxColumn Header="CAPTURA" Binding="{Binding Baseline}" Width="64" IsReadOnly="True"/>
               <DataGridTemplateColumn Header="POLÍTICA" Width="137">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
