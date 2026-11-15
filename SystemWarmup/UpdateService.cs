@@ -103,6 +103,7 @@ public sealed class UpdateService : IDisposable
         var runs = runsDoc.RootElement.GetProperty("workflow_runs").EnumerateArray()
             .Where(x => x.GetProperty("event").GetString() == "pull_request" &&
                         x.GetProperty("head_sha").GetString() == head &&
+                        x.GetProperty("pull_requests").EnumerateArray().Any(p => p.GetProperty("number").GetInt32() == pr) &&
                         x.GetProperty("path").GetString()!.EndsWith("/desktop-build.yml", StringComparison.OrdinalIgnoreCase))
             .OrderByDescending(x => x.GetProperty("run_number").GetInt64())
             .ThenByDescending(x => x.GetProperty("run_attempt").GetInt32())
