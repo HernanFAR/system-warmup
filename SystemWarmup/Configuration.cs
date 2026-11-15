@@ -15,11 +15,18 @@ public sealed class Profile
     public bool LaunchDockerDesktop { get; set; }
     public List<string> CloseProcesses { get; set; } = [];
 }
+public sealed class UpdateOptions
+{
+    public string Repository { get; set; } = "HernanFAR/system-warmup";
+    public string Channel { get; set; } = "Stable";
+    public bool CheckOnLaunch { get; set; } = false;
+}
 public sealed class Settings
 {
     public string SelectedProfile { get; set; } = "Benchmark";
     public bool ApplyAtLogin { get; set; }
     public string Theme { get; set; } = "Dark";
+    public UpdateOptions Updates { get; set; } = new();
     public List<string> BaselineRunningServices { get; set; } = [];
     public DateTimeOffset? BaselineCapturedAt { get; set; }
     public List<Profile> Profiles { get; set; } = [];
