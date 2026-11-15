@@ -129,3 +129,11 @@ Hernán pidió explícitamente **una forma de actualizar System Warmup desde su 
 La referencia a VSlices Tooling indica una inspiración compartida en la experiencia de desarrollo, no un requerimiento de integrar los dos sistemas ni de reproducir literalmente el código de Tooling. La elección del proveedor de releases, los mecanismos de verificación y la política de instalación son **decisiones de realización del asistente** y deben documentarse separadamente.
 
 Esta solicitud se incorporó después de la primera aplicación, los perfiles y la corrección de temas. No fue parte de la intención original del primer bootstrap.
+
+## 13. Precisión sobre los canales de actualización y las credenciales
+
+Hernán rechazó que la actualización de desarrollo dependiera exclusivamente de GitHub Releases. Precisó tres canales: **Release**, que consulta versiones publicadas como release estable; **Preview**, que consulta pre-releases; y **Build**, que sigue un número de Pull Request activo elegido desde la UI y descarga el artefacto de la última ejecución pertinente de GitHub Actions. La ausencia de un artefacto descargable debe comunicarse directamente.
+
+Pidió representar la identidad de Build como `build-[PR-number]-[build-number]`, mostrar en la ventana principal cuándo hay una actualización para el canal seleccionado, y permitir iniciar desde allí el proceso de actualización mediante el actualizador externo. Posteriormente confirmó en su PC que GitHub CLI estaba autenticado con permisos para consultar los artefactos de System Warmup y que aceptaba usar autenticación de lectura para el canal de desarrollo.
+
+La política exacta de selección del workflow, los errores admitidos y la persistencia de identidad instalada son decisiones técnicas de la realización, no frases originalmente impuestas por el usuario.
