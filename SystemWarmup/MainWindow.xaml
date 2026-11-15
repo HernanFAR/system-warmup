@@ -21,7 +21,12 @@
         <Border Background="{DynamicResource BadgeBrush}" CornerRadius="15" Padding="13,8" Margin="0,0,12,0">
           <TextBlock Text="●  LOCAL · ADMIN" Foreground="{DynamicResource BadgeTextBrush}" FontWeight="SemiBold" FontSize="11"/>
         </Border>
-        <Button Content="↻  Actualizaciones" Click="Updates_Click" ToolTip="Consultar nuevas versiones y configurar su origen"/>
+        <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="0,0,7,0">
+          <Button x:Name="UpdateStatusButton" Content="v0.1.0" Click="Updates_Click"
+                  ToolTip="Consultar actualizaciones y gestionar el canal" Margin="0,0,0,2"/>
+          <TextBlock x:Name="UpdateNotice" Text="" Foreground="{DynamicResource AccentBrush}"
+                     TextAlignment="Center" FontSize="10" FontWeight="SemiBold"/>
+        </StackPanel>
         <Button x:Name="ThemeToggle" Content="☀  Modo diurno" Click="ThemeToggle_Click" ToolTip="Alternar entre tema claro y oscuro"/>
         <Button Content="Actualizar servicios" Click="Refresh_Click"/>
       </StackPanel>
