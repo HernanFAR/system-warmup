@@ -60,3 +60,17 @@ A GitHub Actions Windows workflow builds the application and uploads a portable 
 ## Next experiments
 
 Add verifiable service dependency inspection, editable process policies, per-action confirmation, Docker readiness checks, performance sampling and a resource-sensitive scheduler. Measure RAM/CPU before microoptimizing the shell.
+
+## Actualizaciones desde la aplicación (experimental)
+
+La ventana **Actualizaciones** se abre desde la barra superior. Puedes configurar el repositorio GitHub (por defecto `HernanFAR/system-warmup`), el canal `Stable` o `Prerelease` y la comprobación al abrir la aplicación. Todo se guarda en el mismo JSON local: `%LOCALAPPDATA%\SystemWarmup\settings.json`, dentro de `Updates`. **Nunca se instala ni se descarga una versión al comprobarla automáticamente.**
+
+1. `Buscar actualización` consulta las releases públicas del repositorio configurado.
+2. Una versión candidata debe ser más nueva que la versión instalada y publicar `SystemWarmup-win-x64.zip` con `digest: sha256:...` proporcionado por GitHub.
+3. `Descargar e instalar` requiere aprobación explícita. Se descarga a `%LOCALAPPDATA%\SystemWarmup\updates`, se valida SHA-256 y se extrae a un directorio preparado.
+4. Tras la verificación, un script PowerShell **fuera del directorio de instalación** espera a que System Warmup cierre, conserva la instalación anterior en un directorio hermano `*.previous-<fecha>`, copia el paquete nuevo e inicia el programa actualizado. Ante un error de copia o arranque inmediato intenta restaurar la instalación anterior.
+5. Los respaldos anteriores **no se eliminan automáticamente**. Revisar el archivo `apply.log` dentro de la carpeta de preparación para diagnosticar fallos. El mecanismo no garantiza recuperación ante cortes de energía, bloqueos de archivos por antivirus o fallas graves del sistema.
+
+**Requisitos y límites:** ejecutar desde una instalación publicada, no desde `dotnet run` ni `bin/`; conservar el directorio instalado completo y los archivos `.dll`/runtime. Un repositorio distinto puede distribuir código ejecutable distinto: configura solamente orígenes de confianza. Por seguridad la descarga exige SHA-256 de los metadatos del release y un ZIP con estructura reconocible. La preferencia de canal `Prerelease` admite tanto previews como versiones estables; `Stable` omite previews. Las releases no son equivalentes a artefactos temporales de CI.
+
+El workflow `.github/workflows/release.yml` genera el ZIP al publicar tags `v*` y crea la GitHub Release correspondiente. La primera versión liberada por ese flujo requerirá un tag apropiado después de revisar/mergear el PR. **No se ha ejecutado todavía una actualización real en la máquina del usuario.** Esta implementación es una adaptación independiente de la idea de actualización explícita de VSlices Tooling; no incorpora ni depende de su código.
