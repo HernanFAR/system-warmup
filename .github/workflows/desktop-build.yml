@@ -1,0 +1,21 @@
+name: Build Windows desktop
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build
+        run: dotnet build SystemWarmup/SystemWarmup.csproj -c Release
+      - name: Publish portable app
+        run: dotnet publish SystemWarmup/SystemWarmup.csproj -c Release -r win-x64 --self-contained false -o dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SystemWarmup-win-x64
+          path: dist/
